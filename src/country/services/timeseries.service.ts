@@ -1,15 +1,14 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { AddDto } from '../dtos/add-timeseries.dto';
 import { TimeseriesRepository } from '../repositories/timeseries.repository';
+import { EachCasesRepository } from '../repositories/each-cases.repository';
 
 @Injectable()
 export class TimeseriesService {
   constructor(
-    /**
-     * inject timeseries repository
-     */
-
     private readonly timeseriesRepository: TimeseriesRepository,
+
+    private readonly eachcasesRepository: EachCasesRepository,
   ) {}
 
   public async createTimeseries(data: AddDto) {
@@ -34,11 +33,21 @@ export class TimeseriesService {
     return 'Data is added.';
   }
 
-  public async getCases(
+  public getCases(fromDate?: string, toDate?: string, countryCode?: string) {
+    return this.timeseriesRepository.getCases(fromDate, toDate, countryCode);
+  }
+
+  public eachCase(
     fromDate?: string,
     toDate?: string,
-    countryCode?: string,
+    confirmedGte?: number,
+    confirmedLte?: number,
   ) {
-    return this.timeseriesRepository.getCases(fromDate, toDate, countryCode);
+    return this.eachcasesRepository.eachCase(
+      fromDate,
+      toDate,
+      confirmedGte,
+      confirmedLte,
+    );
   }
 }

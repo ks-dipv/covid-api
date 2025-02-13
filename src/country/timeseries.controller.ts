@@ -3,6 +3,7 @@ import { TimeseriesService } from './services/timeseries.service';
 import { AddDto } from './dtos/add-timeseries.dto';
 import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { GetCasesDto } from './dtos/cases.dto';
+import { EachCaseDto } from './dtos/each-cases.dto';
 
 @Controller('/api/country/timeseries')
 export class TimeseriesController {
@@ -50,5 +51,51 @@ export class TimeseriesController {
   public getCases(@Query() getCases: GetCasesDto) {
     const { fromDate, toDate, countryCode } = getCases;
     return this.timeseriesService.getCases(fromDate, toDate, countryCode);
+  }
+
+  @Get('eachCase')
+  @ApiOperation({
+    summary: 'Get cases numbers country wise',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Countries cases data fetched successfully based on the query',
+  })
+  @ApiQuery({
+    name: 'fromDate',
+    type: 'string',
+    required: false,
+    description: 'return countries total data based on query',
+    example: '2020-01-11',
+  })
+  @ApiQuery({
+    name: 'toDate',
+    type: 'string',
+    required: false,
+    description: 'return countries total data based on query',
+    example: '2020-01-25',
+  })
+  @ApiQuery({
+    name: 'confirmedGte',
+    type: 'number',
+    required: false,
+    description: 'return total data based on given in query',
+    example: 500,
+  })
+  @ApiQuery({
+    name: 'confirmedLte',
+    type: 'number',
+    required: false,
+    description: 'return total data based on given in query',
+    example: 500,
+  })
+  public eachCase(@Query() eachCase: EachCaseDto) {
+    const { fromDate, toDate, confirmedGte, confirmedLte } = eachCase;
+    return this.timeseriesService.eachCase(
+      fromDate,
+      toDate,
+      confirmedGte,
+      confirmedLte,
+    );
   }
 }
