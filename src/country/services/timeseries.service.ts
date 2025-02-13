@@ -1,8 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { TimeSeries } from '../entities/timeseries.entity';
-import { Repository } from 'typeorm';
 import { AddDto } from '../dtos/add-timeseries.dto';
+import { TimeseriesRepository } from '../repositories/timeseries.repository';
 
 @Injectable()
 export class TimeseriesService {
@@ -11,8 +9,7 @@ export class TimeseriesService {
      * inject timeseries repository
      */
 
-    @InjectRepository(TimeSeries)
-    private readonly timeseriesRepository: Repository<TimeSeries>,
+    private readonly timeseriesRepository: TimeseriesRepository,
   ) {}
 
   public async createTimeseries(data: AddDto) {
@@ -35,5 +32,13 @@ export class TimeseriesService {
       await this.timeseriesRepository.save(newData);
     }
     return 'Data is added.';
+  }
+
+  public async getCases(
+    fromDate?: string,
+    toDate?: string,
+    countryCode?: string,
+  ) {
+    return this.timeseriesRepository.getCases(fromDate, toDate, countryCode);
   }
 }
