@@ -1,17 +1,20 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { AddDto } from '../dtos/add-timeseries.dto';
-import { TimeseriesRepository } from '../repositories/timeseries.repository';
 import { EachCasesRepository } from '../repositories/each-cases.repository';
 import { TopRepository } from '../repositories/top.repository';
+import { TotalCasesRepository } from '../repositories/total-cases.repository';
+import { TimeseriesRepository } from '../repositories/timeseries.repository';
 
 @Injectable()
 export class TimeseriesService {
   constructor(
-    private readonly timeseriesRepository: TimeseriesRepository,
+    private readonly totalCasesRepository: TotalCasesRepository,
 
     private readonly eachcasesRepository: EachCasesRepository,
 
     private readonly topcasesRepository: TopRepository,
+
+    private readonly timeseriesRepository: TimeseriesRepository,
   ) {}
 
   public async createTimeseries(data: AddDto) {
@@ -37,7 +40,7 @@ export class TimeseriesService {
   }
 
   public getCases(fromDate?: string, toDate?: string, countryCode?: string) {
-    return this.timeseriesRepository.getCases(fromDate, toDate, countryCode);
+    return this.totalCasesRepository.getCases(fromDate, toDate, countryCode);
   }
 
   public eachCase(
