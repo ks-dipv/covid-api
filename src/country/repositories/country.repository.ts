@@ -11,4 +11,18 @@ export class CountryRepository extends Repository<Country> {
   async getByCode(code: string) {
     return this.findOne({ where: { code: code } });
   }
+
+  async list(name?: string, code?: string) {
+    if (name) {
+      return await this.findOne({
+        where: { Name: name },
+      });
+    }
+
+    if (code) {
+      return await this.findOne({
+        where: { code: code },
+      });
+    }
+  }
 }

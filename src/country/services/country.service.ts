@@ -15,4 +15,16 @@ export class CountryService {
     const newCountry = await this.countryRepository.create(countryData);
     return await this.countryRepository.save(newCountry);
   }
+
+  public async list(name?: string, code?: string) {
+    let result = undefined;
+
+    if (!name && !code) {
+      result = await this.countryRepository.find();
+    } else {
+      result = this.countryRepository.list(name, code);
+    }
+
+    return result;
+  }
 }
