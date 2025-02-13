@@ -9,6 +9,7 @@ import { TimeseriesController } from './timeseries.controller';
 import { TimeseriesService } from './services/timeseries.service';
 import { TimeseriesRepository } from './repositories/timeseries.repository';
 import { EachCasesRepository } from './repositories/each-cases.repository';
+import { TopRepository } from './repositories/top.repository';
 
 @Module({
   controllers: [CountryController, TimeseriesController],
@@ -18,6 +19,7 @@ import { EachCasesRepository } from './repositories/each-cases.repository';
     TimeseriesService,
     TimeseriesRepository,
     EachCasesRepository,
+    TopRepository,
   ],
   imports: [TypeOrmModule.forFeature([Country, TimeSeries])],
 })

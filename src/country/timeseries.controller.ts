@@ -4,6 +4,7 @@ import { AddDto } from './dtos/add-timeseries.dto';
 import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { GetCasesDto } from './dtos/cases.dto';
 import { EachCaseDto } from './dtos/each-cases.dto';
+import { GetTopCountries } from './dtos/top.dto';
 
 @Controller('/api/country/timeseries')
 export class TimeseriesController {
@@ -97,5 +98,40 @@ export class TimeseriesController {
       confirmedGte,
       confirmedLte,
     );
+  }
+
+  @Get('topCases')
+  @ApiOperation({
+    summary: 'Get top N countries with highest confirmed cases',
+  })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Response contains top N countries with highest number of confirmed cases',
+  })
+  @ApiQuery({
+    name: 'fromDate',
+    type: 'string',
+    required: false,
+    description: 'return top N countries data based on query',
+    example: '2020-01-11',
+  })
+  @ApiQuery({
+    name: 'toDate',
+    type: 'string',
+    required: false,
+    description: 'return top N countries data based on query',
+    example: '2020-01-25',
+  })
+  @ApiQuery({
+    name: 'top',
+    type: 'number',
+    required: false,
+    description: 'return top N countries data based on in query',
+    example: 5,
+  })
+  public getTopCases(@Query() getTopCases: GetTopCountries) {
+    const { fromDate, toDate, top } = getTopCases;
+    return this.timeseriesService.getTopCase(fromDate, toDate, top);
   }
 }

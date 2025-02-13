@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { AddDto } from '../dtos/add-timeseries.dto';
 import { TimeseriesRepository } from '../repositories/timeseries.repository';
 import { EachCasesRepository } from '../repositories/each-cases.repository';
+import { TopRepository } from '../repositories/top.repository';
 
 @Injectable()
 export class TimeseriesService {
@@ -9,6 +10,8 @@ export class TimeseriesService {
     private readonly timeseriesRepository: TimeseriesRepository,
 
     private readonly eachcasesRepository: EachCasesRepository,
+
+    private readonly topcasesRepository: TopRepository,
   ) {}
 
   public async createTimeseries(data: AddDto) {
@@ -49,5 +52,9 @@ export class TimeseriesService {
       confirmedGte,
       confirmedLte,
     );
+  }
+
+  public getTopCase(fromDate?: string, toDate?: string, top?: number) {
+    return this.topcasesRepository.getTopCases(fromDate, toDate, top);
   }
 }
