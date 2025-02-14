@@ -10,10 +10,9 @@ import {
   Query,
 } from '@nestjs/common';
 import { CountryService } from './services/country.service';
-import { AddCountryDto } from './dtos/add.dto';
+import { AddCountryDto, UpdateDto } from './dtos/country.dto';
 import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
-import { GetListDto } from './dtos/get-list.dto';
-import { UpdateDto } from './dtos/update.dto';
+import { FilterDto } from './dtos/filter.dto';
 
 @Controller('api/country')
 export class CountryController {
@@ -51,7 +50,7 @@ export class CountryController {
     description: 'return country based on the code given in query',
     example: 'In',
   })
-  public getCountries(@Query() getList: GetListDto) {
+  public getCountries(@Query() getList: FilterDto) {
     const { name, code } = getList;
     return this.countryService.list(name, code);
   }

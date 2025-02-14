@@ -10,14 +10,13 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { TimeseriesService } from './services/timeseries.service';
-import { AddDto } from './dtos/add-timeseries.dto';
+import {
+  AddDto,
+  DeleteTimeseriesDto,
+  UpdateTimeseriesDto,
+} from './dtos/timeseries.dto';
 import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
-import { GetCasesDto } from './dtos/cases.dto';
-import { EachCaseDto } from './dtos/each-cases.dto';
-import { GetTopCountries } from './dtos/top.dto';
-import { UpdateTimeseriesDto } from './dtos/update-timeseries.dto';
-import { DeleteTimeseriesDto } from './dtos/delete-timeseries.dto';
-import { MonthCasesDto } from './dtos/month-cases.dto';
+import { FilterDto } from './dtos/filter.dto';
 
 @Controller('/api/country/timeseries')
 export class TimeseriesController {
@@ -62,9 +61,9 @@ export class TimeseriesController {
     description: 'return country based on the code given in query',
     example: 'IN',
   })
-  public getCases(@Query() getCases: GetCasesDto) {
-    const { fromDate, toDate, countryCode } = getCases;
-    return this.timeseriesService.getCases(fromDate, toDate, countryCode);
+  public getCases(@Query() getCases: FilterDto) {
+    const { fromDate, toDate, code } = getCases;
+    return this.timeseriesService.getCases(fromDate, toDate, code);
   }
 
   @Put('update')
@@ -129,7 +128,7 @@ export class TimeseriesController {
     description: 'return total data based on given in query',
     example: 500,
   })
-  public eachCase(@Query() eachCase: EachCaseDto) {
+  public eachCase(@Query() eachCase: FilterDto) {
     const { fromDate, toDate, confirmedGte, confirmedLte } = eachCase;
     return this.timeseriesService.eachCase(
       fromDate,
@@ -169,7 +168,7 @@ export class TimeseriesController {
     description: 'return top N countries data based on in query',
     example: 5,
   })
-  public getTopCases(@Query() getTopCases: GetTopCountries) {
+  public getTopCases(@Query() getTopCases: FilterDto) {
     const { fromDate, toDate, top } = getTopCases;
     return this.timeseriesService.getTopCase(fromDate, toDate, top);
   }
@@ -211,7 +210,7 @@ export class TimeseriesController {
     description: 'return monthwise total data based on given in query',
     example: 500,
   })
-  public getMonthCases(@Query() getMonthCases: MonthCasesDto) {
+  public getMonthCases(@Query() getMonthCases: FilterDto) {
     const { fromDate, toDate, confirmedGte, confirmedLte } = getMonthCases;
     return this.timeseriesService.getMonthCase(
       fromDate,

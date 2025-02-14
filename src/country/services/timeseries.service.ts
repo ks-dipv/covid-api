@@ -1,11 +1,13 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { AddDto } from '../dtos/add-timeseries.dto';
+import {
+  AddDto,
+  DeleteTimeseriesDto,
+  UpdateTimeseriesDto,
+} from '../dtos/timeseries.dto';
 import { EachCasesRepository } from '../repositories/each-cases.repository';
 import { TopRepository } from '../repositories/top.repository';
 import { TotalCasesRepository } from '../repositories/total-cases.repository';
 import { TimeseriesRepository } from '../repositories/timeseries.repository';
-import { UpdateTimeseriesDto } from '../dtos/update-timeseries.dto';
-import { DeleteTimeseriesDto } from '../dtos/delete-timeseries.dto';
 import { MonthCaseRepository } from '../repositories/month-cases.repository';
 
 @Injectable()
@@ -71,8 +73,8 @@ export class TimeseriesService {
     return 'Data is deleted.';
   }
 
-  public getCases(fromDate?: string, toDate?: string, countryCode?: string) {
-    return this.totalCasesRepository.getCases(fromDate, toDate, countryCode);
+  public getCases(fromDate?: string, toDate?: string, code?: string) {
+    return this.totalCasesRepository.getCases(fromDate, toDate, code);
   }
 
   public eachCase(

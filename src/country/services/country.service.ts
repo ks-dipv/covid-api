@@ -4,8 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CountryRepository } from '../repositories/country.repository';
-import { AddCountryDto } from '../dtos/add.dto';
-import { UpdateDto } from '../dtos/update.dto';
+import { AddCountryDto, UpdateDto } from '../dtos/country.dto';
 
 @Injectable()
 export class CountryService {
@@ -28,7 +27,7 @@ export class CountryService {
     });
 
     //update country
-    existantCountry.Name = updateCountryDataDto.cName ?? existantCountry.Name;
+    existantCountry.Name = updateCountryDataDto.name ?? existantCountry.Name;
     existantCountry.code = updateCountryDataDto.code ?? existantCountry.code;
     existantCountry.flag = updateCountryDataDto.flag ?? existantCountry.flag;
 
