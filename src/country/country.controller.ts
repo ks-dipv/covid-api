@@ -1,8 +1,19 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { CountryService } from './services/country.service';
 import { AddCountryDto } from './dtos/add.dto';
 import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { GetListDto } from './dtos/get-list.dto';
+import { UpdateDto } from './dtos/update.dto';
 
 @Controller('api/country')
 export class CountryController {
@@ -43,5 +54,41 @@ export class CountryController {
   public getCountries(@Query() getList: GetListDto) {
     const { name, code } = getList;
     return this.countryService.list(name, code);
+  }
+
+  @Put('update')
+  @ApiOperation({
+    summary: 'Update country',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Successfuly update country data',
+  })
+  public updateCountry(@Body() updateCountryDto: UpdateDto) {
+    return this.countryService.update(updateCountryDto);
+  }
+
+  @Delete('delete')
+  @ApiOperation({
+    summary: 'Delete country',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Successfuly delete country data',
+  })
+  public deleteCountry(@Query('id', ParseIntPipe) id: number) {
+    return this.countryService.delete(id);
+  }
+
+  @Get(':id')
+  @ApiOperation({
+    summary: 'get country by id',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Successfuly get country data for specific id',
+  })
+  public getCountry(@Param('id', ParseIntPipe) id: number) {
+    return this.countryService.getCountry(id);
   }
 }
