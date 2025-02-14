@@ -1,10 +1,22 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Post,
+  Put,
+  Query,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { TimeseriesService } from './services/timeseries.service';
 import { AddDto } from './dtos/add-timeseries.dto';
 import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { GetCasesDto } from './dtos/cases.dto';
 import { EachCaseDto } from './dtos/each-cases.dto';
 import { GetTopCountries } from './dtos/top.dto';
+import { UpdateTimeseriesDto } from './dtos/update-timeseries.dto';
+import { DeleteTimeseriesDto } from './dtos/delete-timeseries.dto';
 
 @Controller('/api/country/timeseries')
 export class TimeseriesController {
@@ -52,6 +64,32 @@ export class TimeseriesController {
   public getCases(@Query() getCases: GetCasesDto) {
     const { fromDate, toDate, countryCode } = getCases;
     return this.timeseriesService.getCases(fromDate, toDate, countryCode);
+  }
+
+  @Put('update')
+  @ApiOperation({
+    summary: 'Update timeseries data',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Successfuly update timeseries data',
+  })
+  @UsePipes(new ValidationPipe())
+  async updateTimeseries(@Body() data: UpdateTimeseriesDto) {
+    return await this.timeseriesService.updateTimeseries(data);
+  }
+
+  @Delete('delete')
+  @ApiOperation({
+    summary: 'Delete timeseries data',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Successfuly delete timeseries data',
+  })
+  @UsePipes(new ValidationPipe())
+  async deleteTime(@Body() data: DeleteTimeseriesDto) {
+    return await this.timeseriesService.deleteTimeseries(data);
   }
 
   @Get('eachCase')

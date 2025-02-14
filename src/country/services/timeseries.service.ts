@@ -4,6 +4,8 @@ import { EachCasesRepository } from '../repositories/each-cases.repository';
 import { TopRepository } from '../repositories/top.repository';
 import { TotalCasesRepository } from '../repositories/total-cases.repository';
 import { TimeseriesRepository } from '../repositories/timeseries.repository';
+import { UpdateTimeseriesDto } from '../dtos/update-timeseries.dto';
+import { DeleteTimeseriesDto } from '../dtos/delete-timeseries.dto';
 
 @Injectable()
 export class TimeseriesService {
@@ -37,6 +39,33 @@ export class TimeseriesService {
       await this.timeseriesRepository.save(newData);
     }
     return 'Data is added.';
+  }
+
+  public async updateTimeseries(data: UpdateTimeseriesDto) {
+    const existingData = await this.timeseriesRepository.findOne({
+      where: { Name: data.name, date: data.date },
+    });
+    if (!existingData)
+      throw new BadRequestException(
+        'Data is not available for given date and country.',
+      );
+    Object.assign(existingData, data);
+    return await this.timeseriesRepository.save(existingData);
+  }
+
+  public async deleteTimeseries(data: DeleteTimeseriesDto) {
+    const fromDate = new Date(data.from).getTime();
+    const toDate = new Date(data.to).getTime();
+    const countryData = await this.timeseriesRepository.find({
+      where: { Name: data.name },
+    });
+    const filterData = await countryData.filter((data) => {
+      const date = new Date(data.date).getTime() ?? null;
+      if (fromDate <= date && date <= toDate) return data;
+    });
+    const ids = filterData.map((data) => data.id);
+    await this.timeseriesRepository.delete(ids);
+    return 'Data is deleted.';
   }
 
   public getCases(fromDate?: string, toDate?: string, countryCode?: string) {
