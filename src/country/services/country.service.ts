@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { CountryRepository } from '../repositories/country.repository';
 import { AddCountryDto, UpdateDto } from '../dtos/country.dto';
-import { PaginationProvider } from '../../pagination/providers/pagination.provider';
-import { PaginationQueryDto } from '../../pagination/dtos/pagination.dto';
+import { PaginationProvider } from '../../common/pagination/providers/pagination.provider';
+import { PaginationQueryDto } from '../../common/pagination/dtos/pagination.dto';
 
 @Injectable()
 export class CountryService {

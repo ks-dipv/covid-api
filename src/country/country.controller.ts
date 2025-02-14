@@ -13,7 +13,7 @@ import { CountryService } from './services/country.service';
 import { AddCountryDto, UpdateDto } from './dtos/country.dto';
 import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { FilterDto } from './dtos/filter.dto';
-import { PaginationQueryDto } from 'src/pagination/dtos/pagination.dto';
+import { PaginationQueryDto } from 'src/common/pagination/dtos/pagination.dto';
 
 @Controller('api/country')
 export class CountryController {

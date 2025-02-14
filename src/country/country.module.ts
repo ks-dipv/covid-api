@@ -13,7 +13,7 @@ import { MonthCaseRepository } from './repositories/month-cases.repository';
 import { TopRepository } from './repositories/top.repository';
 import { ExcelController } from './excel.controller';
 import { ExcelService } from './services/excel.service';
-import { PaginationModule } from '../pagination/pagination.module';
+import { PaginationModule } from '../common/pagination/pagination.module';
 
 @Module({
   controllers: [CountryController, TimeseriesController, ExcelController],

@@ -8,8 +8,8 @@ import { TotalCasesRepository } from '../repositories/total-cases.repository';
 import { TimeseriesRepository } from '../repositories/timeseries.repository';
 import { MonthCaseRepository } from '../repositories/month-cases.repository';
 import { TopRepository } from '../repositories/top.repository';
-import { PaginationProvider } from '../../pagination/providers/pagination.provider';
-import { PaginationQueryDto } from '../../pagination/dtos/pagination.dto';
+import { PaginationProvider } from '../../common/pagination/providers/pagination.provider';
+import { PaginationQueryDto } from '../../common/pagination/dtos/pagination.dto';
 
 @Injectable()
 export class TimeseriesService {

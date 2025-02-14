@@ -17,7 +17,7 @@ import {
 } from './dtos/timeseries.dto';
 import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { FilterDto } from './dtos/filter.dto';
-import { PaginationQueryDto } from '../pagination/dtos/pagination.dto';
+import { PaginationQueryDto } from '../common/pagination/dtos/pagination.dto';
 
 @Controller('/api/country/timeseries')
 export class TimeseriesController {

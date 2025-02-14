@@ -4,7 +4,7 @@ import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CountryModule } from './country/country.module';
-import { PaginationModule } from './pagination/pagination.module';
+import { PaginationModule } from './common/pagination/pagination.module';
 import environmentValidation from './config/environment.validation';
 import databaseConfig from './config/database.config';
 import appConfig from './config/app.config';
