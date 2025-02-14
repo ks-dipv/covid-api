@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  RequestTimeoutException,
+} from '@nestjs/common';
 import { Between, DataSource, Repository } from 'typeorm';
 import { TimeSeries } from '../entities/timeseries.entity';
 import {
@@ -49,25 +54,57 @@ export class TimeseriesRepository extends Repository<TimeSeries> {
   }
 
   async entry(data: AddDto) {
-    for (let i = 0; i < data.data.length; i++) {
-      const existingData = await this.findOne({
-        where: { date: data.data[i].date, Name: data.Name },
-      });
-      if (existingData)
-        throw new BadRequestException(
-          'Data is already available for given Date and Country',
-        );
-      const timeData = {
-        Name: data.Name,
-        date: data.data[i].date,
-        confirmed: data.data[i].confirmed,
-        deaths: data.data[i].deaths,
-        recovered: data.data[i].recovered,
-      };
-      const newData = await this.create(timeData);
-      await this.save(newData);
+    //crate Query runner Instance
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    try {
+      //Connect Query Runner to datasource
+      await queryRunner.connect();
+
+      // Start Transaction
+      await queryRunner.startTransaction();
+    } catch (error) {
+      throw new RequestTimeoutException(
+        'Could not connect to the database',
+        error,
+      );
     }
-    return 'Data is added.';
+
+    try {
+      for (let i = 0; i < data.data.length; i++) {
+        const existingData = await this.findOne({
+          where: { date: data.data[i].date, Name: data.Name },
+        });
+        if (existingData)
+          throw new BadRequestException(
+            'Data is already available for given Date and Country',
+          );
+        const timeData = {
+          Name: data.Name,
+          date: data.data[i].date,
+          confirmed: data.data[i].confirmed,
+          deaths: data.data[i].deaths,
+          recovered: data.data[i].recovered,
+        };
+        const newData = await this.create(timeData);
+        await this.save(newData);
+      }
+      return 'Data is added.';
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw new ConflictException('Could not complete the transaction', {
+        description: String(error),
+      });
+    } finally {
+      try {
+        // Release connection
+        await queryRunner.release();
+      } catch (error) {
+        throw new RequestTimeoutException('Could not release the connection', {
+          description: String(error),
+        });
+      }
+    }
   }
 
   async deleteData(data: DeleteTimeseriesDto) {
