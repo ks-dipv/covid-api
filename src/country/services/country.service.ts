@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CountryRepository } from '../repositories/country.repository';
 import { AddCountryDto, UpdateDto } from '../dtos/country.dto';
 
@@ -36,29 +32,11 @@ export class CountryService {
   }
 
   public async delete(id: number) {
-    const country = await this.countryRepository.findOne({
-      relations: { timeseries: true },
-      where: { id: id },
-    });
-    if (country.timeseries.length > 0) {
-      throw new BadRequestException(
-        'This country is not deleted because, it have timeseries data.',
-      );
-    }
-    return await this.countryRepository.remove(country);
+    return await this.countryRepository.deleteCountry(id);
   }
 
   public async getCountry(id: number) {
-    const country = await this.countryRepository.findOne({
-      where: { id: id },
-    });
-
-    if (!country) throw new NotFoundException('Coutnry is not found.');
-    const data = await this.countryRepository.findOne({
-      relations: { timeseries: true },
-      where: { id: id },
-    });
-    return data;
+    return await this.countryRepository.fetch(id);
   }
 
   public async list(name?: string, code?: string) {

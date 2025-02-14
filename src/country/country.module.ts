@@ -7,11 +7,10 @@ import { TimeSeries } from './entities/timeseries.entity';
 import { CountryRepository } from './repositories/country.repository';
 import { TimeseriesController } from './timeseries.controller';
 import { TimeseriesService } from './services/timeseries.service';
-import { EachCasesRepository } from './repositories/each-cases.repository';
-import { TopRepository } from './repositories/top.repository';
 import { TotalCasesRepository } from './repositories/total-cases.repository';
 import { TimeseriesRepository } from './repositories/timeseries.repository';
 import { MonthCaseRepository } from './repositories/month-cases.repository';
+import { TopRepository } from './repositories/top.repository';
 
 @Module({
   controllers: [CountryController, TimeseriesController],
@@ -19,11 +18,10 @@ import { MonthCaseRepository } from './repositories/month-cases.repository';
     CountryService,
     CountryRepository,
     TimeseriesService,
-    EachCasesRepository,
-    TopRepository,
     TotalCasesRepository,
     TimeseriesRepository,
     MonthCaseRepository,
+    TopRepository,
   ],
   imports: [TypeOrmModule.forFeature([Country, TimeSeries])],
 })

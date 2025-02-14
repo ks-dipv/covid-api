@@ -14,9 +14,6 @@ export class MonthCaseRepository extends Repository<TimeSeries> {
     confirmedGte?: number,
     confirmedLte?: number,
   ) {
-    // const from = fromDate ? new Date(fromDate) : new Date('2000-01-01');
-    // const to = toDate ? new Date(toDate) : new Date();
-
     const queryBuilder = this.createQueryBuilder('timeseries');
 
     if (fromDate) {
@@ -27,7 +24,7 @@ export class MonthCaseRepository extends Repository<TimeSeries> {
       queryBuilder.andWhere('timeseries.date >= :fromDate', { toDate });
     }
 
-    const result = await queryBuilder
+    return await queryBuilder
       .select('timeseries.Name', 'country')
       .addSelect("TO_CHAR(CAST(timeseries.date AS DATE), 'YYYY-MM')", 'month')
       .addSelect('SUM(timeseries.confirmed)', 'confirmed')
@@ -43,13 +40,5 @@ export class MonthCaseRepository extends Repository<TimeSeries> {
       .orderBy('country', 'ASC')
       .addOrderBy('month', 'ASC')
       .getRawMany();
-
-    return result.map((record) => ({
-      country: record.country,
-      month: record.month,
-      confirmed: Number(record.confirmed),
-      deaths: Number(record.deaths),
-      recovered: Number(record.recovered),
-    }));
   }
 }

@@ -24,6 +24,13 @@ export class CountryController {
   ) {}
 
   @Post('entry')
+  @ApiOperation({
+    summary: 'Add country',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Successfuly add country data',
+  })
   public add(@Body() countryDto: AddCountryDto) {
     return this.countryService.add(countryDto);
   }

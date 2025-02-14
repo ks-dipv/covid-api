@@ -28,6 +28,13 @@ export class TimeseriesController {
   ) {}
 
   @Post('entry')
+  @ApiOperation({
+    summary: 'Add timeseries data',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Successfuly add timeseries data',
+  })
   async createTimeseries(@Body() data: AddDto) {
     return await this.timeseriesService.createTimeseries(data);
   }

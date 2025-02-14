@@ -23,7 +23,7 @@ export class TopRepository extends Repository<TimeSeries> {
       queryBuilder.limit(top);
     }
 
-    const result = await queryBuilder
+    return await queryBuilder
       .select('ts.Name', 'country')
       .addSelect('SUM(ts.confirmed)', 'confirmed')
       .addSelect('SUM(ts.deaths)', 'deaths')
@@ -31,14 +31,5 @@ export class TopRepository extends Repository<TimeSeries> {
       .groupBy('ts.Name')
       .orderBy('SUM(ts.confirmed)', 'DESC')
       .getRawMany();
-
-    return result.map((record) => ({
-      country: record.country,
-      totals: {
-        confirmed: Number(record.confirmed),
-        deaths: Number(record.deaths),
-        recovered: Number(record.recovered),
-      },
-    }));
   }
 }

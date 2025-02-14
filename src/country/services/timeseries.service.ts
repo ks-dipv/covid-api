@@ -4,52 +4,29 @@ import {
   DeleteTimeseriesDto,
   UpdateTimeseriesDto,
 } from '../dtos/timeseries.dto';
-import { EachCasesRepository } from '../repositories/each-cases.repository';
-import { TopRepository } from '../repositories/top.repository';
 import { TotalCasesRepository } from '../repositories/total-cases.repository';
 import { TimeseriesRepository } from '../repositories/timeseries.repository';
 import { MonthCaseRepository } from '../repositories/month-cases.repository';
+import { TopRepository } from '../repositories/top.repository';
 
 @Injectable()
 export class TimeseriesService {
   constructor(
     private readonly totalCasesRepository: TotalCasesRepository,
 
-    private readonly eachcasesRepository: EachCasesRepository,
-
-    private readonly topcasesRepository: TopRepository,
-
     private readonly timeseriesRepository: TimeseriesRepository,
 
     private readonly monthCaseRepository: MonthCaseRepository,
+
+    private readonly topCasesRepository: TopRepository,
   ) {}
 
   public async createTimeseries(data: AddDto) {
-    for (let i = 0; i < data.data.length; i++) {
-      const existingData = await this.timeseriesRepository.findOne({
-        where: { date: data.data[i].date, Name: data.Name },
-      });
-      if (existingData)
-        throw new BadRequestException(
-          'Data is already available for given Date and Country',
-        );
-      const timeData = {
-        Name: data.Name,
-        date: data.data[i].date,
-        confirmed: data.data[i].confirmed,
-        deaths: data.data[i].deaths,
-        recovered: data.data[i].recovered,
-      };
-      const newData = await this.timeseriesRepository.create(timeData);
-      await this.timeseriesRepository.save(newData);
-    }
-    return 'Data is added.';
+    return await this.timeseriesRepository.entry(data);
   }
 
   public async updateTimeseries(data: UpdateTimeseriesDto) {
-    const existingData = await this.timeseriesRepository.findOne({
-      where: { Name: data.name, date: data.date },
-    });
+    const existingData = await this.timeseriesRepository.updateData(data);
     if (!existingData)
       throw new BadRequestException(
         'Data is not available for given date and country.',
@@ -73,39 +50,79 @@ export class TimeseriesService {
     return 'Data is deleted.';
   }
 
-  public getCases(fromDate?: string, toDate?: string, code?: string) {
-    return this.totalCasesRepository.getCases(fromDate, toDate, code);
+  public async getCases(fromDate?: string, toDate?: string, code?: string) {
+    const result = await this.totalCasesRepository.getCases(
+      fromDate,
+      toDate,
+      code,
+    );
+
+    return {
+      confirmed: Number(result.confirmed),
+      deaths: Number(result.deaths),
+      recovered: Number(result.recovered),
+    };
   }
 
-  public eachCase(
+  public async eachCase(
     fromDate?: string,
     toDate?: string,
     confirmedGte?: number,
     confirmedLte?: number,
   ) {
-    return this.eachcasesRepository.eachCase(
+    const result = await this.timeseriesRepository.getCases(
       fromDate,
       toDate,
       confirmedGte,
       confirmedLte,
     );
+
+    return result.map((record) => ({
+      country: record.country,
+      totals: {
+        confirmed: Number(record.confirmed),
+        deaths: Number(record.deaths),
+        recovered: Number(record.recovered),
+      },
+    }));
   }
 
-  public getTopCase(fromDate?: string, toDate?: string, top?: number) {
-    return this.topcasesRepository.getTopCases(fromDate, toDate, top);
+  public async getTopCase(fromDate?: string, toDate?: string, top?: number) {
+    const result = await this.topCasesRepository.getTopCases(
+      fromDate,
+      toDate,
+      top,
+    );
+
+    return result.map((record) => ({
+      country: record.country,
+      totals: {
+        confirmed: Number(record.confirmed),
+        deaths: Number(record.deaths),
+        recovered: Number(record.recovered),
+      },
+    }));
   }
 
-  public getMonthCase(
+  public async getMonthCase(
     fromDate?: string,
     toDate?: string,
     confirmedGte?: number,
     confirmedLte?: number,
   ) {
-    return this.monthCaseRepository.getMonthCase(
+    const result = await this.monthCaseRepository.getMonthCase(
       fromDate,
       toDate,
       confirmedGte,
       confirmedLte,
     );
+
+    return result.map((record) => ({
+      country: record.country,
+      month: record.month,
+      confirmed: Number(record.confirmed),
+      deaths: Number(record.deaths),
+      recovered: Number(record.recovered),
+    }));
   }
 }
