@@ -11,9 +11,11 @@ import { TotalCasesRepository } from './repositories/total-cases.repository';
 import { TimeseriesRepository } from './repositories/timeseries.repository';
 import { MonthCaseRepository } from './repositories/month-cases.repository';
 import { TopRepository } from './repositories/top.repository';
+import { ExcelController } from './excel.controller';
+import { ExcelService } from './services/excel.service';
 
 @Module({
-  controllers: [CountryController, TimeseriesController],
+  controllers: [CountryController, TimeseriesController, ExcelController],
   providers: [
     CountryService,
     CountryRepository,
@@ -22,6 +24,7 @@ import { TopRepository } from './repositories/top.repository';
     TimeseriesRepository,
     MonthCaseRepository,
     TopRepository,
+    ExcelService,
   ],
   imports: [TypeOrmModule.forFeature([Country, TimeSeries])],
 })
