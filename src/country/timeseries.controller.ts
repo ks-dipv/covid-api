@@ -17,6 +17,7 @@ import {
 } from './dtos/timeseries.dto';
 import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { FilterDto } from './dtos/filter.dto';
+import { PaginationQueryDto } from '../pagination/dtos/pagination.dto';
 
 @Controller('/api/country/timeseries')
 export class TimeseriesController {
@@ -225,5 +226,17 @@ export class TimeseriesController {
       confirmedGte,
       confirmedLte,
     );
+  }
+
+  @Get('list')
+  @ApiOperation({
+    summary: 'get all timeseries data',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Successfuly get timeseries data',
+  })
+  async getTimeseries(@Query() timeseriesQuery: PaginationQueryDto) {
+    return await this.timeseriesService.getTimeseries(timeseriesQuery);
   }
 }

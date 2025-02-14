@@ -13,6 +13,7 @@ import { MonthCaseRepository } from './repositories/month-cases.repository';
 import { TopRepository } from './repositories/top.repository';
 import { ExcelController } from './excel.controller';
 import { ExcelService } from './services/excel.service';
+import { PaginationModule } from '../pagination/pagination.module';
 
 @Module({
   controllers: [CountryController, TimeseriesController, ExcelController],
@@ -26,6 +27,6 @@ import { ExcelService } from './services/excel.service';
     TopRepository,
     ExcelService,
   ],
-  imports: [TypeOrmModule.forFeature([Country, TimeSeries])],
+  imports: [TypeOrmModule.forFeature([Country, TimeSeries]), PaginationModule],
 })
 export class CountryModule {}

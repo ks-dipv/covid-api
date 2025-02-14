@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { CountryRepository } from '../repositories/country.repository';
 import { AddCountryDto, UpdateDto } from '../dtos/country.dto';
+import { PaginationProvider } from '../../pagination/providers/pagination.provider';
+import { PaginationQueryDto } from '../../pagination/dtos/pagination.dto';
 
 @Injectable()
 export class CountryService {
@@ -9,6 +11,11 @@ export class CountryService {
      * inject country repository
      */
     private readonly countryRepository: CountryRepository,
+
+    /**
+     * injecting pagination provider
+     */
+    private readonly paginationProvider: PaginationProvider,
   ) {}
 
   public async add(countryData: AddCountryDto) {
@@ -49,5 +56,16 @@ export class CountryService {
     }
 
     return result;
+  }
+
+  public async getAllCountry(countryQuery: PaginationQueryDto) {
+    const country = await this.paginationProvider.paginateQuery(
+      {
+        limit: countryQuery.limit,
+        page: countryQuery.page,
+      },
+      this.countryRepository,
+    );
+    return country;
   }
 }

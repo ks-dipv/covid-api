@@ -8,6 +8,8 @@ import { TotalCasesRepository } from '../repositories/total-cases.repository';
 import { TimeseriesRepository } from '../repositories/timeseries.repository';
 import { MonthCaseRepository } from '../repositories/month-cases.repository';
 import { TopRepository } from '../repositories/top.repository';
+import { PaginationProvider } from '../../pagination/providers/pagination.provider';
+import { PaginationQueryDto } from '../../pagination/dtos/pagination.dto';
 
 @Injectable()
 export class TimeseriesService {
@@ -19,6 +21,11 @@ export class TimeseriesService {
     private readonly monthCaseRepository: MonthCaseRepository,
 
     private readonly topCasesRepository: TopRepository,
+
+    /**
+     * injecting pagination provider
+     */
+    private readonly paginationProvider: PaginationProvider,
   ) {}
 
   public async createTimeseries(data: AddDto) {
@@ -124,5 +131,16 @@ export class TimeseriesService {
       deaths: Number(record.deaths),
       recovered: Number(record.recovered),
     }));
+  }
+
+  public async getTimeseries(timeseriesQuery: PaginationQueryDto) {
+    const timeseries = await this.paginationProvider.paginateQuery(
+      {
+        limit: timeseriesQuery.limit,
+        page: timeseriesQuery.page,
+      },
+      this.timeseriesRepository,
+    );
+    return timeseries;
   }
 }
