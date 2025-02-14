@@ -6,6 +6,7 @@ import { TotalCasesRepository } from '../repositories/total-cases.repository';
 import { TimeseriesRepository } from '../repositories/timeseries.repository';
 import { UpdateTimeseriesDto } from '../dtos/update-timeseries.dto';
 import { DeleteTimeseriesDto } from '../dtos/delete-timeseries.dto';
+import { MonthCaseRepository } from '../repositories/month-cases.repository';
 
 @Injectable()
 export class TimeseriesService {
@@ -17,6 +18,8 @@ export class TimeseriesService {
     private readonly topcasesRepository: TopRepository,
 
     private readonly timeseriesRepository: TimeseriesRepository,
+
+    private readonly monthCaseRepository: MonthCaseRepository,
   ) {}
 
   public async createTimeseries(data: AddDto) {
@@ -88,5 +91,19 @@ export class TimeseriesService {
 
   public getTopCase(fromDate?: string, toDate?: string, top?: number) {
     return this.topcasesRepository.getTopCases(fromDate, toDate, top);
+  }
+
+  public getMonthCase(
+    fromDate?: string,
+    toDate?: string,
+    confirmedGte?: number,
+    confirmedLte?: number,
+  ) {
+    return this.monthCaseRepository.getMonthCase(
+      fromDate,
+      toDate,
+      confirmedGte,
+      confirmedLte,
+    );
   }
 }

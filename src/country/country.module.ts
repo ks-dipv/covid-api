@@ -11,6 +11,7 @@ import { EachCasesRepository } from './repositories/each-cases.repository';
 import { TopRepository } from './repositories/top.repository';
 import { TotalCasesRepository } from './repositories/total-cases.repository';
 import { TimeseriesRepository } from './repositories/timeseries.repository';
+import { MonthCaseRepository } from './repositories/month-cases.repository';
 
 @Module({
   controllers: [CountryController, TimeseriesController],
@@ -22,6 +23,7 @@ import { TimeseriesRepository } from './repositories/timeseries.repository';
     TopRepository,
     TotalCasesRepository,
     TimeseriesRepository,
+    MonthCaseRepository,
   ],
   imports: [TypeOrmModule.forFeature([Country, TimeSeries])],
 })

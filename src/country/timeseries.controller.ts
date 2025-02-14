@@ -17,6 +17,7 @@ import { EachCaseDto } from './dtos/each-cases.dto';
 import { GetTopCountries } from './dtos/top.dto';
 import { UpdateTimeseriesDto } from './dtos/update-timeseries.dto';
 import { DeleteTimeseriesDto } from './dtos/delete-timeseries.dto';
+import { MonthCasesDto } from './dtos/month-cases.dto';
 
 @Controller('/api/country/timeseries')
 export class TimeseriesController {
@@ -171,5 +172,52 @@ export class TimeseriesController {
   public getTopCases(@Query() getTopCases: GetTopCountries) {
     const { fromDate, toDate, top } = getTopCases;
     return this.timeseriesService.getTopCase(fromDate, toDate, top);
+  }
+
+  @Get('monthCase')
+  @ApiOperation({
+    summary: 'Get cases numbers month wise',
+  })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Month wise countries cases data fetched successfully based on the query',
+  })
+  @ApiQuery({
+    name: 'fromDate',
+    type: 'string',
+    required: false,
+    description: 'return monthwise countries total data based on query',
+    example: '2020-01-11',
+  })
+  @ApiQuery({
+    name: 'toDate',
+    type: 'string',
+    required: false,
+    description: 'return monthwise countries total data based on query',
+    example: '2020-01-25',
+  })
+  @ApiQuery({
+    name: 'confirmedGte',
+    type: 'number',
+    required: false,
+    description: 'return monthwise total data based on given in query',
+    example: 500,
+  })
+  @ApiQuery({
+    name: 'confirmedLte',
+    type: 'number',
+    required: false,
+    description: 'return monthwise total data based on given in query',
+    example: 500,
+  })
+  public getMonthCases(@Query() getMonthCases: MonthCasesDto) {
+    const { fromDate, toDate, confirmedGte, confirmedLte } = getMonthCases;
+    return this.timeseriesService.getMonthCase(
+      fromDate,
+      toDate,
+      confirmedGte,
+      confirmedLte,
+    );
   }
 }
