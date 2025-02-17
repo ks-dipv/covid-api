@@ -5,6 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CountryModule } from './country/country.module';
 import { PaginationModule } from './common/pagination/pagination.module';
+import { UploadModule } from './upload/upload.module';
 import environmentValidation from './config/environment.validation';
 import databaseConfig from './config/database.config';
 import appConfig from './config/app.config';
@@ -36,6 +37,7 @@ const ENV = process.env.NODE_ENV;
     }),
     CountryModule,
     PaginationModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],
