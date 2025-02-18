@@ -5,4 +5,7 @@ export default registerAs('appConfig', () => ({
   minioBucketName: process.env.MINIO_PUBLIC_BUCKET_NAME,
   minioAccessKey: process.env.MINIO_ACCESS_KEY,
   minioSecretKey: process.env.MINIO_SECRET_KEY,
+  mailHost: process.env.MAIL_HOST,
+  smtpUsername: process.env.SMTP_USERNAME,
+  smtpPassword: process.env.SMTP_PASSWORD,
 }));
