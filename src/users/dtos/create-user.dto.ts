@@ -7,6 +7,7 @@ import {
   MinLength,
   MaxLength,
   Matches,
+  IsArray,
 } from 'class-validator';
 
 export class CreateUserDto {
@@ -56,4 +57,9 @@ export class CreateUserDto {
     required: true,
   })
   password: string;
+
+  @IsArray()
+  @IsOptional()
+  @IsString({ each: true })
+  subscription?: string[];
 }

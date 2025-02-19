@@ -6,7 +6,7 @@ import { BcryptProvider } from './services/bcrypt.provider';
 import { HashingProvider } from './services/hashing.provider';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { HttpModule } from '@nestjs/axios';
+import { TimeSeries } from '../country/entities/timeseries.entity';
 
 @Module({
   controllers: [UsersController],
@@ -19,6 +19,6 @@ import { HttpModule } from '@nestjs/axios';
     },
     BcryptProvider,
   ],
-  imports: [TypeOrmModule.forFeature([User]), HttpModule],
+  imports: [TypeOrmModule.forFeature([User, TimeSeries])],
 })
 export class UsersModule {}

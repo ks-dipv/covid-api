@@ -1,13 +1,17 @@
 <p>Dear <%= name %>,</p>
-<p>
-    Thanks for signing up for Nice App.
-</p>
 
-<p>Here are your account details:</p>
+<p>Here are the latest data for your subscribed countries:</p>
 <ul>
-    <li>Email: <%= email %></li>
-    <li>Login URL: <%= loginUrl %></li>
+    <% countryData.forEach(data => { %>
+        <li>
+            <h3><%= data.countryName %></h3>
+            <p><strong>Total Confirmed:</strong> <%= data.totalData.confirmed %></p>
+            <p><strong>Total Deaths:</strong> <%= data.totalData.deaths %></p>
+            <p><strong>Total Recovered:</strong> <%= data.totalData.recovered %></p>
+            <p><strong>Latest Date:</strong> <%= data.latestData.date %></p>
+            <p><strong>Latest Confirmed:</strong> <%= data.latestData.confirmed %></p>
+            <p><strong>Latest Deaths:</strong> <%= data.latestData.deaths %></p>
+            <p><strong>Latest Recovered:</strong> <%= data.latestData.recovered %></p>
+        </li>
+    <% }); %>
 </ul>
-
-Thanks:
-Nestjs Blog Support

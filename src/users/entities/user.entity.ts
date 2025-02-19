@@ -33,4 +33,10 @@ export class User {
     nullable: true,
   })
   password?: string;
+
+  @Column({
+    type: 'simple-array',
+    nullable: true,
+  })
+  subscription: string[];
 }

@@ -1,91 +1,37 @@
+import { InjectRepository } from '@nestjs/typeorm';
 import {
-  BadRequestException,
   Injectable,
-  RequestTimeoutException,
+  BadRequestException,
 } from '@nestjs/common';
 import { CreateUserDto } from '../dtos/create-user.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { HashingProvider } from './hashing.provider';
 import { User } from '../entities/user.entity';
-import { MailService } from '../../mail/services/mail.service';
+import { TimeSeries } from 'src/country/entities/timeseries.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class CreateUserProvider {
   constructor(
-    /**
-     * injecting usersRepository
-     */
-    @InjectRepository(User)
-    private usersRepository: Repository<User>,
-
-    /**
-     * inject hashing provider
-     */
+    @InjectRepository(User) private usersRepository: Repository<User>,
+    @InjectRepository(TimeSeries)
     private readonly hashingProvider: HashingProvider,
-
-    /**
-     * inject the mailService
-     */
-    private readonly mailService: MailService,
   ) {}
+
   public async createUser(createUserDto: CreateUserDto) {
-    let existingUser = undefined;
-
-    try {
-      // check if user exists with same email
-      existingUser = await this.usersRepository.findOne({
-        where: {
-          email: createUserDto.email,
-        },
-      });
-    } catch {
-      //Might savae the details of the exception
-      //information which is sensitive
-      throw new RequestTimeoutException(
-        'Unable to process your request at the moment please try later',
-        {
-          description: 'Error connecting to the database',
-        },
-      );
-    }
-    // check if user exists with same email
-    await this.usersRepository.findOne({
-      where: {
-        email: createUserDto.email,
-      },
+    const existingUser = await this.usersRepository.findOne({
+      where: { email: createUserDto.email },
     });
-
-    // handle exception
     if (existingUser) {
       throw new BadRequestException(
         'User already exists, please check your email.',
       );
     }
 
-    //create a new user
-    let newUser = this.usersRepository.create({
+    const newUser = this.usersRepository.create({
       ...createUserDto,
       password: await this.hashingProvider.hashPassword(createUserDto.password),
+      subscription: createUserDto.subscription || [],
     });
-
-    try {
-      newUser = await this.usersRepository.save(newUser);
-    } catch {
-      throw new RequestTimeoutException(
-        'Unable to process your request at the moment please try later',
-        {
-          description: 'Error connecting to the database',
-        },
-      );
-    }
-
-    try {
-      await this.mailService.sendUserWelcome(newUser);
-    } catch (error) {
-      throw new RequestTimeoutException('email not sent', error);
-    }
-
-    return newUser;
+    await this.usersRepository.save(newUser);
   }
 }

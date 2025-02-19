@@ -4,10 +4,15 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { join } from 'path';
 import { ConfigService } from '@nestjs/config';
 import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
+import { MailScheduler } from './mail.scheduler';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from 'src/users/entities/user.entity';
+import { TimeSeries } from 'src/country/entities/timeseries.entity';
 
 @Global()
 @Module({
   imports: [
+    TypeOrmModule.forFeature([User, TimeSeries]),
     MailerModule.forRootAsync({
       inject: [ConfigService],
       useFactory: async (config: ConfigService) => ({
@@ -33,7 +38,7 @@ import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
       }),
     }),
   ],
-  providers: [MailService],
+  providers: [MailService, MailScheduler],
   exports: [MailService],
 })
 export class MailModule {}
