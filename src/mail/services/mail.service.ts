@@ -22,7 +22,6 @@ export class MailService {
     });
 
     for (const user of users) {
-
       const countryData = [];
       for (const country of user.subscription) {
         const totalData = await this.timeSeriesRepository

@@ -8,7 +8,7 @@ export class MailScheduler {
 
   @Cron('0 0 * * *')
   async sendDailyEmails() {
-    console.log('Sending every minutues subscription emails...');
+    console.log('Sending every day midnight subscription emails...');
     await this.mailService.sendDailyUpdateEmail();
   }
 }
