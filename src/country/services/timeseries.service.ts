@@ -10,6 +10,7 @@ import { MonthCaseRepository } from '../repositories/month-cases.repository';
 import { TopRepository } from '../repositories/top.repository';
 import { PaginationProvider } from '../../common/pagination/providers/pagination.provider';
 import { PaginationQueryDto } from '../../common/pagination/dtos/pagination.dto';
+import { Country } from '../entities/country.entity';
 
 @Injectable()
 export class TimeseriesService {
@@ -45,13 +46,25 @@ export class TimeseriesService {
   public async deleteTimeseries(data: DeleteTimeseriesDto) {
     const fromDate = new Date(data.from).getTime();
     const toDate = new Date(data.to).getTime();
-    const countryData = await this.timeseriesRepository.find({
+
+    // Fetching Country based on its Name
+    const country = await this.timeseriesRepository.manager.findOne(Country, {
       where: { Name: data.name },
     });
-    const filterData = await countryData.filter((data) => {
+
+    if (!country) {
+      throw new BadRequestException('Country not found');
+    }
+
+    const countryData = await this.timeseriesRepository.find({
+      where: { country: country },
+    });
+
+    const filterData = countryData.filter((data) => {
       const date = new Date(data.date).getTime() ?? null;
       if (fromDate <= date && date <= toDate) return data;
     });
+
     const ids = filterData.map((data) => data.id);
     await this.timeseriesRepository.delete(ids);
     return 'Data is deleted.';

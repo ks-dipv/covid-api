@@ -8,11 +8,12 @@ import { MailScheduler } from './mail.scheduler';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { TimeSeries } from 'src/country/entities/timeseries.entity';
+import { Country } from 'src/country/entities/country.entity';
 
 @Global()
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, TimeSeries]),
+    TypeOrmModule.forFeature([User, TimeSeries, Country]),
     MailerModule.forRootAsync({
       inject: [ConfigService],
       useFactory: async (config: ConfigService) => ({

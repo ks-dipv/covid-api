@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { Between, DataSource, Repository } from 'typeorm';
 import { TimeSeries } from '../entities/timeseries.entity';
+import { Country } from '../entities/country.entity';
 import {
   AddDto,
   DeleteTimeseriesDto,
@@ -24,14 +25,16 @@ export class TimeseriesRepository extends Repository<TimeSeries> {
     confirmedGte?: number,
     confirmedLte?: number,
   ) {
-    const queryBuilder = this.createQueryBuilder('timeseries');
+    const queryBuilder = this.createQueryBuilder(
+      'timeseries',
+    ).leftJoinAndSelect('timeseries.country', 'country');
 
     if (fromDate) {
       queryBuilder.andWhere('timeseries.date >= :fromDate', { fromDate });
     }
 
     if (toDate) {
-      queryBuilder.andWhere('timeseries.date >= :fromDate', { toDate });
+      queryBuilder.andWhere('timeseries.date <= :toDate', { toDate });
     }
 
     if (confirmedGte || confirmedLte) {
@@ -43,22 +46,21 @@ export class TimeseriesRepository extends Repository<TimeSeries> {
     }
 
     const result = await queryBuilder
-      .select('timeseries.Name', 'country')
+      .select('country.Name', 'country')
       .addSelect('SUM(timeseries.confirmed)', 'confirmed')
       .addSelect('SUM(timeseries.deaths)', 'deaths')
       .addSelect('SUM(timeseries.recovered)', 'recovered')
-      .groupBy('timeseries.Name')
+      .groupBy('country.Name')
       .getRawMany();
 
     return result;
   }
 
   async entry(data: AddDto) {
-    //crate Query runner Instance
     const queryRunner = this.dataSource.createQueryRunner();
 
     try {
-      //Connect Query Runner to datasource
+      // Connect Query Runner to datasource
       await queryRunner.connect();
 
       // Start Transaction
@@ -72,23 +74,35 @@ export class TimeseriesRepository extends Repository<TimeSeries> {
 
     try {
       for (let i = 0; i < data.data.length; i++) {
-        const existingData = await this.findOne({
-          where: { date: data.data[i].date, Name: data.Name },
+        const country = await queryRunner.manager.findOne(Country, {
+          where: { Name: data.Name },
         });
+
+        if (!country) {
+          throw new BadRequestException('Country not found');
+        }
+
+        const existingData = await this.findOne({
+          where: { date: data.data[i].date, country: country },
+        });
+
         if (existingData)
           throw new BadRequestException(
-            'Data is already available for given Date and Country',
+            'Data is already available for the given Date and Country',
           );
+
         const timeData = {
-          Name: data.Name,
+          country: country,
           date: data.data[i].date,
           confirmed: data.data[i].confirmed,
           deaths: data.data[i].deaths,
           recovered: data.data[i].recovered,
         };
-        const newData = await this.create(timeData);
-        await this.save(newData);
+
+        const newData = this.create(timeData);
+        await queryRunner.manager.save(newData);
       }
+      await queryRunner.commitTransaction();
       return 'Data is added.';
     } catch (error) {
       await queryRunner.rollbackTransaction();
@@ -112,7 +126,7 @@ export class TimeseriesRepository extends Repository<TimeSeries> {
     const toDate = new Date(data.to).toISOString();
 
     const deleteResult = await this.delete({
-      Name: data.name,
+      country: { Name: data.name },
       date: Between(fromDate, toDate),
     });
 
@@ -127,7 +141,7 @@ export class TimeseriesRepository extends Repository<TimeSeries> {
 
   async updateData(data: UpdateTimeseriesDto) {
     return await this.findOne({
-      where: { Name: data.name, date: data.date },
+      where: { country: { Name: data.name }, date: data.date },
     });
   }
 }

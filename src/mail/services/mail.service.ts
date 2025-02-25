@@ -3,7 +3,8 @@ import { Injectable } from '@nestjs/common';
 import { User } from '../../users/entities/user.entity';
 import { IsNull, Not, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { TimeSeries } from 'src/country/entities/timeseries.entity';
+import { TimeSeries } from '../../country/entities/timeseries.entity';
+import { Country } from '../../country/entities/country.entity';
 
 @Injectable()
 export class MailService {
@@ -12,6 +13,7 @@ export class MailService {
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(TimeSeries)
     private timeSeriesRepository: Repository<TimeSeries>,
+    @InjectRepository(Country) private countryRepository: Repository<Country>,
   ) {}
 
   public async sendDailyUpdateEmail() {
@@ -23,21 +25,29 @@ export class MailService {
 
     for (const user of users) {
       const countryData = [];
-      for (const country of user.subscription) {
+      for (const countryName of user.subscription) {
+        const country = await this.countryRepository.findOne({
+          where: { Name: countryName },
+        });
+
+        if (!country) {
+          continue;
+        }
+
         const totalData = await this.timeSeriesRepository
           .createQueryBuilder('timeseries')
           .select('SUM(timeseries.confirmed)', 'confirmed')
           .addSelect('SUM(timeseries.deaths)', 'deaths')
           .addSelect('SUM(timeseries.recovered)', 'recovered')
-          .where('timeseries.Name = :country', { country })
+          .where('timeseries.country = :countryId', { countryId: country.id })
           .getRawOne();
 
         const latestData = await this.timeSeriesRepository.findOne({
-          where: { Name: country },
+          where: { country: country },
           order: { date: 'DESC' },
         });
 
-        countryData.push({ countryName: country, totalData, latestData });
+        countryData.push({ countryName: country.Name, totalData, latestData });
       }
 
       await this.mailerService.sendMail({
@@ -45,7 +55,10 @@ export class MailService {
         from: 'COVID-19 Updates <support@covid-updates.com>',
         subject: 'Daily COVID-19 Update',
         template: './data',
-        context: { name: user.firstName, countryData: countryData },
+        context: {
+          name: user.firstName,
+          countryData: countryData,
+        },
       });
     }
   }
